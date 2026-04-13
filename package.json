@@ -2,13 +2,14 @@
   "name": "server_rust_api",
   "version": "1.0.0",
   "description": "Template project for writing node package with napi-rs",
-  "main": "index.js",
+  "main": "dist/native/index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/napi-rs/package-template.git"
   },
   "license": "MIT",
-  "browser": "browser.js",
+  "types": "dist/native/index.d.ts",
+  "browser": "dist/native/browser.js",
   "keywords": [
     "napi-rs",
     "NAPI",
@@ -18,9 +19,9 @@
     "node-addon-api"
   ],
   "files": [
+    "dist/native",
     "index.d.ts",
-    "index.js",
-    "browser.js"
+    "index.js"
   ],
   "napi": {
     "binaryName": "server_rust_api",
@@ -62,7 +63,7 @@
     "test": "ava",
     "preversion": "napi build --platform && git add .",
     "version": "napi version",
-    "prepare": "husky"
+    "prepare": "napi build --platform --release --output-dir ./dist/native --target-dir ./dist/target && husky"
   },
   "devDependencies": {
     "@emnapi/core": "^1.5.0",

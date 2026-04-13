@@ -29,7 +29,7 @@ With [ava](https://github.com/avajs/ava), run `yarn test/npm run test` to testin
 
 ### CI
 
-With GitHub Actions, each commit and pull request will be built and tested automatically in [`node@20`, `@node22`] x [`macOS`, `Linux`, `Windows`] matrix. You will never be afraid of the native addon broken in these platforms.
+With GitHub Actions, each commit and pull request will be built and tested automatically in \[`node@20`, `@node22`] x \[`macOS`, `Linux`, `Windows`] matrix. You will never be afraid of the native addon broken in these platforms.
 
 ### Release
 
@@ -70,9 +70,9 @@ $ ava --verbose
 
 ## Release package
 
-Ensure you have set your **NPM_TOKEN** in the `GitHub` project setting.
+Ensure you have set your **NPM\_TOKEN** in the `GitHub` project setting.
 
-In `Settings -> Secrets`, add **NPM_TOKEN** into it.
+In `Settings -> Secrets`, add **NPM\_TOKEN** into it.
 
 When you want to release the package:
 
@@ -85,3 +85,4 @@ git push
 GitHub actions will do the rest job for you.
 
 > WARN: Don't run `npm publish` manually.
+
