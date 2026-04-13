@@ -1,6 +1,6 @@
-pub mod send_Notification;
+pub mod send_notification;
 
-pub use send_Notification::{
+pub use send_notification::{
   send_notification,
   NotificationOptions,
   NotificationResult,
