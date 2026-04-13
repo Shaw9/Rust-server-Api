@@ -9,6 +9,8 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
+base64 = "0.22.1"
+image = { version = "0.25.8", default-features = false, features = ["bmp", "ico", "jpeg", "png"] }
 napi = "3.0.0"
 napi-derive = "3.0.0"
 
