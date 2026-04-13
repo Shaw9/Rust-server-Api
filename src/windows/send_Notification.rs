@@ -89,6 +89,7 @@ fn create_icon_from_base64(icon_base64: &str) -> Result<OwnedIcon, String> {
 
 /// 发送 Windows 系统通知
 #[napi]
+#[cfg(windows)]
 pub fn send_notification(options: NotificationOptions) -> NotificationResult {
   use std::iter;
   use std::ptr;

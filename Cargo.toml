@@ -16,7 +16,15 @@ napi-derive = "3.0.0"
 
 [dependencies.windows]
 version = "0.62.2"
-features = ["Win32_Foundation", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"]
+features = [
+  "Win32_Foundation",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32_NetworkManagement_IpHelper",
+  "Win32_NetworkManagement_Ndis",
+  "Win32_Networking_WinSock",
+  "Win32_System_ProcessStatus",
+]
 
 [build-dependencies]
 napi-build = "2"
