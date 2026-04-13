@@ -6,3 +6,6 @@ pub use send_Notification::{
   NotificationResult,
 };
 pub mod get_windows_info;
+pub use get_windows_info::{
+  get_windows_info,
+};
