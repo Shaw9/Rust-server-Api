@@ -58,8 +58,6 @@ fn get_ip_addresses() -> Vec<String> {
   ip_addresses
 }
 
-
-
 #[napi]
 #[cfg(windows)]
 pub fn get_windows_info() -> WindowsInfo {

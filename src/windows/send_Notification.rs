@@ -3,24 +3,24 @@ use std::sync::OnceLock;
 
 use napi_derive::napi;
 use windows::{
+  core::{Error as WinError, Interface, GUID, HSTRING},
   Data::Xml::Dom::XmlDocument,
-  UI::Notifications::{ToastNotification, ToastNotificationManager},
   Win32::{
     Foundation::{RPC_E_CHANGED_MODE, S_FALSE},
     Storage::EnhancedStorage::{PKEY_AppUserModel_ID, PKEY_AppUserModel_ToastActivatorCLSID},
     System::{
       Com::{
-        CoCreateInstance, CoInitializeEx, CoTaskMemFree, CoUninitialize, CLSCTX_INPROC_SERVER,
-        COINIT_MULTITHREADED, IPersistFile,
+        CoCreateInstance, CoInitializeEx, CoTaskMemFree, CoUninitialize, IPersistFile,
+        CLSCTX_INPROC_SERVER, COINIT_MULTITHREADED,
       },
       WinRT::{RoInitialize, RoUninitialize, RO_INIT_MULTITHREADED},
     },
     UI::Shell::{
-      PropertiesSystem::IPropertyStore, FOLDERID_Programs, KF_FLAG_CREATE, SHGetKnownFolderPath,
-      IShellLinkW, ShellLink,
+      FOLDERID_Programs, IShellLinkW, PropertiesSystem::IPropertyStore, SHGetKnownFolderPath,
+      ShellLink, KF_FLAG_CREATE,
     },
   },
-  core::{Error as WinError, GUID, HSTRING, Interface},
+  UI::Notifications::{ToastNotification, ToastNotificationManager},
 };
 
 const APP_ID: &str = "ShawLiu.server_rust_api";
@@ -87,7 +87,8 @@ fn send_toast_notification(options: NotificationOptions) -> Result<(), String> {
   ensure_shortcut_registered()?;
 
   let xml = build_toast_xml(&options);
-  let document = XmlDocument::new().map_err(|error| format_windows_error("创建通知 XML 失败", &error))?;
+  let document =
+    XmlDocument::new().map_err(|error| format_windows_error("创建通知 XML 失败", &error))?;
   document
     .LoadXml(&HSTRING::from(xml))
     .map_err(|error| format_windows_error("加载通知 XML 失败", &error))?;
@@ -141,7 +142,8 @@ fn ensure_shortcut_registered() -> Result<(), String> {
 
 fn register_shortcut() -> Result<(), String> {
   let shortcut_path = shortcut_path()?;
-  let executable_path = std::env::current_exe().map_err(|error| format!("获取当前进程路径失败: {error}"))?;
+  let executable_path =
+    std::env::current_exe().map_err(|error| format!("获取当前进程路径失败: {error}"))?;
   let working_directory = executable_path
     .parent()
     .ok_or_else(|| "当前进程没有可用的工作目录".to_string())?;
@@ -173,15 +175,20 @@ fn register_shortcut() -> Result<(), String> {
     .cast()
     .map_err(|error| format_windows_error("获取快捷方式属性存储失败", &error))?;
   let app_id_value = windows::Win32::System::Com::StructuredStorage::PROPVARIANT::from(APP_ID);
-  let toast_activator_value = unsafe { windows::Win32::System::Com::StructuredStorage::InitPropVariantFromCLSID(&TOAST_ACTIVATOR_CLSID) }
-    .map_err(|error| format_windows_error("创建 ToastActivatorCLSID 属性失败", &error))?;
+  let toast_activator_value = unsafe {
+    windows::Win32::System::Com::StructuredStorage::InitPropVariantFromCLSID(&TOAST_ACTIVATOR_CLSID)
+  }
+  .map_err(|error| format_windows_error("创建 ToastActivatorCLSID 属性失败", &error))?;
 
   unsafe {
     property_store
       .SetValue(&PKEY_AppUserModel_ID, &app_id_value)
       .map_err(|error| format_windows_error("设置 AppUserModelID 失败", &error))?;
     property_store
-      .SetValue(&PKEY_AppUserModel_ToastActivatorCLSID, &toast_activator_value)
+      .SetValue(
+        &PKEY_AppUserModel_ToastActivatorCLSID,
+        &toast_activator_value,
+      )
       .map_err(|error| format_windows_error("设置 ToastActivatorCLSID 失败", &error))?;
     property_store
       .Commit()

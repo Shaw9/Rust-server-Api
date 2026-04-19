@@ -1,5 +1,5 @@
 const nativeBinding = require('./dist/native')
 
 module.exports = nativeBinding
-module.exports.add = nativeBinding.add
+module.exports.getWindowsInfo = nativeBinding.getWindowsInfo
 module.exports.sendNotification = nativeBinding.sendNotification

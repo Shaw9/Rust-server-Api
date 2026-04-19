@@ -144,8 +144,15 @@ jobs:
         with:
           name: bindings-${{ matrix.settings.target }}
           path: |
-            ${{ env.APP_NAME }}.*.node
-            ${{ env.APP_NAME }}.*.wasm
+            dist/native/index.js
+            dist/native/index.d.ts
+            dist/native/browser.js
+            dist/native/${{ env.APP_NAME }}.*.node
+            dist/native/${{ env.APP_NAME }}.*.wasm
+            dist/native/${{ env.APP_NAME }}.wasi.cjs
+            dist/native/${{ env.APP_NAME }}.wasi-browser.js
+            dist/native/wasi-worker.mjs
+            dist/native/wasi-worker-browser.mjs
           if-no-files-found: error
   build-freebsd:
     runs-on: ubuntu-latest
@@ -189,7 +196,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: bindings-freebsd
-          path: ${{ env.APP_NAME }}.*.node
+          path: dist/native/${{ env.APP_NAME }}.*.node
           if-no-files-found: error
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
@@ -232,7 +239,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: bindings-${{ matrix.settings.target }}
-          path: .
+          path: dist/native
       - name: List packages
         run: ls -R .
         shell: bash
@@ -290,7 +297,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: bindings-${{ matrix.target }}
-          path: .
+          path: dist/native
       - name: List packages
         run: ls -R .
         shell: bash
@@ -329,7 +336,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: bindings-wasm32-wasip1-threads
-          path: .
+          path: dist/native
       - name: List packages
         run: ls -R .
         shell: bash
@@ -361,6 +368,8 @@ jobs:
           bun-version: ${{ env.BUN_VERSION }}
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
       - name: create npm dirs
         run: bunx napi create-npm-dirs
       - name: Download all artifacts
