@@ -5,7 +5,7 @@
   "main": "dist/native/index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/napi-rs/package-template.git"
+    "url": "git+https://github.com/Shaw9/Rust-server-Api.git"
   },
   "license": "MIT",
   "types": "dist/native/index.d.ts",
