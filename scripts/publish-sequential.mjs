@@ -8,9 +8,9 @@ const NPM_DIR = path.join(ROOT_DIR, 'npm')
 const ROOT_PACKAGE = path.join(ROOT_DIR, 'package.json')
 const NPM_COMMAND = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
-const MAX_ATTEMPTS = Number.parseInt(process.env.NPM_PUBLISH_MAX_ATTEMPTS ?? '5', 10)
-const WAIT_BETWEEN_PACKAGES_MS = Number.parseInt(process.env.NPM_PUBLISH_WAIT_MS ?? '12000', 10)
-const INITIAL_RETRY_DELAY_MS = Number.parseInt(process.env.NPM_PUBLISH_RETRY_DELAY_MS ?? '30000', 10)
+const MAX_ATTEMPTS = Number.parseInt(process.env.NPM_PUBLISH_MAX_ATTEMPTS ?? '6', 10)
+const WAIT_BETWEEN_PACKAGES_MS = Number.parseInt(process.env.NPM_PUBLISH_WAIT_MS ?? '45000', 10)
+const INITIAL_RETRY_DELAY_MS = Number.parseInt(process.env.NPM_PUBLISH_RETRY_DELAY_MS ?? '120000', 10)
 const DRY_RUN = process.env.NPM_PUBLISH_DRY_RUN === '1'
 
 function sleep(ms) {
@@ -75,12 +75,29 @@ function publishPackage(dir, tag, access) {
     return
   }
 
-  execFileSync(NPM_COMMAND, args, {
-    cwd: dir,
-    stdio: 'inherit',
-    env: process.env,
-    shell: process.platform === 'win32',
-  })
+  try {
+    const output = execFileSync(NPM_COMMAND, args, {
+      cwd: dir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: process.env,
+      shell: process.platform === 'win32',
+    })
+
+    if (output) {
+      process.stdout.write(output)
+    }
+  } catch (error) {
+    if (error.stdout) {
+      process.stdout.write(error.stdout)
+    }
+
+    if (error.stderr) {
+      process.stderr.write(error.stderr)
+    }
+
+    throw error
+  }
 }
 
 function ensurePublishable(dir) {
@@ -110,6 +127,11 @@ async function publishWithRetry(dir, tag, access) {
       console.log(`Published ${label}`)
       return true
     } catch (error) {
+      if (packageExists(pkg.name, pkg.version)) {
+        console.log(`Package ${label} is now available after publish attempt, continuing`)
+        return true
+      }
+
       if (attempt === MAX_ATTEMPTS || !shouldRetry(error)) {
         throw error
       }
