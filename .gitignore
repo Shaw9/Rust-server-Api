@@ -118,3 +118,9 @@ Cargo.lock
 
 *.node
 /npm
+
+# Generated build artifacts
+/dist/
+/server/*.bun-build
+*.bun-build
+*.exe
