@@ -18,7 +18,12 @@ env:
       - .editorconfig
       - docs/**
   pull_request: null
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional npm dist-tag override for manually resuming a publish, for example latest or next.'
+        required: false
+        default: ''
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -231,6 +236,19 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: artifacts
+      - name: Prepare root package files
+        run: |
+          set -euo pipefail
+          mkdir -p dist/native
+          for file in index.js index.d.ts browser.js; do
+            source_file="$(find artifacts -type f -name "$file" -print -quit)"
+            if [ -z "$source_file" ]; then
+              echo "Missing $file in downloaded artifacts" >&2
+              exit 1
+            fi
+            cp "$source_file" "dist/native/$file"
+          done
+        shell: bash
       - name: Move artifacts
         run: bun run artifacts
       - name: List packages
@@ -246,3 +264,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_RELEASE_TAG: ${{ github.event.inputs.release_tag }}

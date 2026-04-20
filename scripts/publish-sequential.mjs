@@ -144,6 +144,15 @@ async function publishWithRetry(dir, tag, access) {
 }
 
 function getReleaseTag() {
+  const releaseTag = process.env.NPM_RELEASE_TAG?.trim()
+  if (releaseTag) {
+    if (!/^[a-z0-9][a-z0-9._-]*$/i.test(releaseTag)) {
+      throw new Error(`Invalid npm release tag: ${releaseTag}`)
+    }
+
+    return releaseTag
+  }
+
   const commitMessage = execFileSync('git', ['log', '-1', '--pretty=%B'], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],

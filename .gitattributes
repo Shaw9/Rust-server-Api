@@ -6,7 +6,10 @@
 *.tsx   text eol=lf merge=union
 *.rs    text eol=lf merge=union
 *.js    text eol=lf merge=union
+*.mjs   text eol=lf merge=union
 *.json  text eol=lf merge=union
+*.yml   text eol=lf merge=union
+*.yaml  text eol=lf merge=union
 *.debug text eol=lf merge=union
 
 # Generated codes
